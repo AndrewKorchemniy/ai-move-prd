@@ -1,0 +1,36 @@
+{
+	"schemaVersion": 1,
+	"id": "ai-move-prd",
+	"version": "${version}",
+	"name": "ai-move-prd",
+	"description": "ai player movement predictor",
+	"authors": [
+		"wvvern"
+	],
+	"license": "MIT",
+	"icon": "assets/ai-move-prd/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.wvv.aimoveprd.Aimoveprd"
+		],
+		"fabric-datagen": [
+			"net.wvv.aimoveprd.AimoveprdDataGenerator"
+		],
+		"client": [
+			"net.wvv.aimoveprd.AimoveprdClient"
+		]
+	},
+	"mixins": [
+		"ai-move-prd.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21.4",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

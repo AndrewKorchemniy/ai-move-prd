@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "net.wvv.aimoveprd.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"ExampleMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
