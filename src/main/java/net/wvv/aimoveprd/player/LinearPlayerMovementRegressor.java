@@ -5,7 +5,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LinearFitPlayerMovementRegressor implements IPlayerMovementRegressor {
+public class LinearPlayerMovementRegressor implements IPlayerMovementRegressor {
     public List<Vec3d> predict(List<Vec3d> actual, int ticks) {
         // Split apart the actual list into x, y, and z components
         var x_train = new double[actual.size()];
@@ -38,13 +38,12 @@ public class LinearFitPlayerMovementRegressor implements IPlayerMovementRegresso
 
         // Calculate the sums required for the linear regression
         for (int i = 0; i < n; i++) {
-            double xi = i;
             double yi = train[i];
 
-            sumX += xi;
+            sumX += i;
             sumY += yi;
-            sumXY += xi * yi;
-            sumX2 += xi * xi;
+            sumXY += (double) i * yi;
+            sumX2 += (double) i * (double) i;
         }
 
         // Calculate the slope (m) and intercept (b) for the linear equation y = mx + b

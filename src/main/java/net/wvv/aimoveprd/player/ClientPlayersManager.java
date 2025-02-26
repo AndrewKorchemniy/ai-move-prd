@@ -1,16 +1,16 @@
 package net.wvv.aimoveprd.player;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.wvv.aimoveprd.logging.IPlayerLogger;
 import net.wvv.aimoveprd.logging.PlayerLog;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class ClientPlayersManager implements IClientPlayersManager {
-    private final List<String> trackingUsernames = new ArrayList<>();
+    private final HashSet<String> trackingPlayers = new HashSet<>();
     private final List<Entity> players = new ArrayList<>();
     private IPlayerLogger logger;
     private int tick = 0;
@@ -19,21 +19,15 @@ public class ClientPlayersManager implements IClientPlayersManager {
         this.logger = logger;
     }
 
-    public void registerOnClientTick() {
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.world != null) {
-                updatePlayers(client.world);
-                log();
-            }
-
-            tick++;
-        });
+    public void update(ClientWorld world) {
+        updatePlayers(world);
+        log();
+        tick++;
     }
 
     public void setLogger(IPlayerLogger newLogger) {
         logger.stop();
         logger = newLogger;
-        logger.start();
     }
 
     private void log() {
@@ -53,16 +47,16 @@ public class ClientPlayersManager implements IClientPlayersManager {
         });
     }
 
-    public void addTracking(String username) {
-        trackingUsernames.add(username);
+    public void addTracking(String playerName) {
+        trackingPlayers.add(playerName);
     }
 
-    public void removeTracking(String username) {
-        trackingUsernames.remove(username);
+    public void removeTracking(String playerName) {
+        trackingPlayers.remove(playerName);
     }
 
     public void clearTracking() {
-        trackingUsernames.clear();
+        trackingPlayers.clear();
     }
 
     public List<Entity> getPlayers() {
@@ -73,7 +67,7 @@ public class ClientPlayersManager implements IClientPlayersManager {
         players.clear();
 
         world.getEntities().forEach(entity -> {
-            if (entity.isPlayer() && !entity.isInvisible() && entity.isAlive() && trackingUsernames.contains(entity.getName().getString())) {
+            if (entity.isPlayer() && !entity.isInvisible() && entity.isAlive() && entity.getDisplayName() != null && trackingPlayers.contains(entity.getDisplayName().getString())) {
                 players.add(entity);
             }
         });

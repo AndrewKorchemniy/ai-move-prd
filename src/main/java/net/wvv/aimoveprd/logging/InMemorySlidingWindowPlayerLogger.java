@@ -4,7 +4,7 @@ import java.util.*;
 
 public class InMemorySlidingWindowPlayerLogger implements IPlayerLogger {
     private final Map<String, List<PlayerLog>> logs;
-    private final int size;
+    private int size;
     private boolean isLogging = false;
 
     public InMemorySlidingWindowPlayerLogger(int size) {
@@ -43,7 +43,12 @@ public class InMemorySlidingWindowPlayerLogger implements IPlayerLogger {
         isLogging = false;
     }
 
-    public List<PlayerLog> getLogs(String uuid) {
-        return logs.getOrDefault(uuid, Collections.emptyList());
+    public void setWindowSize(int size) {
+        logs.clear();
+        this.size = size;
+    }
+
+    public List<PlayerLog> getLogs(String playerName) {
+        return logs.getOrDefault(playerName, Collections.emptyList());
     }
 }

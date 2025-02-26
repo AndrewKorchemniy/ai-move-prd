@@ -6,11 +6,9 @@ import net.wvv.aimoveprd.logging.IPlayerLogger;
 import java.util.List;
 
 public interface IClientPlayersManager {
-    void registerOnClientTick();
+    void addTracking(String playerName);
 
-    void addTracking(String username);
-
-    void removeTracking(String username);
+    void removeTracking(String playerName);
 
     void clearTracking();
 

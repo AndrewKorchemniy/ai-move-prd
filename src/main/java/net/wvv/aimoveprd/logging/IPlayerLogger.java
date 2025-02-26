@@ -9,5 +9,7 @@ public interface IPlayerLogger {
 
     void stop();
 
-    List<PlayerLog> getLogs(String uuid);
+    void setWindowSize(int size);
+
+    List<PlayerLog> getLogs(String playerName);
 }

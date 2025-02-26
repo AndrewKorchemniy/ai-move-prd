@@ -1,8 +1,7 @@
 package net.wvv.aimoveprd.logging;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.FileHandler;
@@ -15,6 +14,15 @@ public class FilePlayerLogger implements IPlayerLogger {
 
     private FileHandler fh;
     private boolean isLogging = false;
+
+    public void log(PlayerLog log) {
+        if (!isLogging) {
+            return;
+        }
+
+        // tick, uuid, x, y, z, yaw, pitch, movement.x, movement.y, movement.z, movementDirection.x, movementDirection.y, movementDirection.z, isOnGround
+        LOGGER.log(Level.INFO, String.format("%d,%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%b", log.tick(), log.uuid(), log.x(), log.y(), log.z(), log.yaw(), log.pitch(), log.movementX(), log.movementY(), log.movementZ(), log.movementDirectionX(), log.movementDirectionY(), log.movementDirectionZ(), log.isOnGround()));
+    }
 
     public void start() {
         if (isLogging) {
@@ -54,16 +62,10 @@ public class FilePlayerLogger implements IPlayerLogger {
         isLogging = false;
     }
 
-    public void log(PlayerLog log) {
-        if (!isLogging) {
-            return;
-        }
-
-        // tick, uuid, x, y, z, yaw, pitch, movement.x, movement.y, movement.z, movementDirection.x, movementDirection.y, movementDirection.z, isOnGround
-        LOGGER.log(Level.INFO, String.format("%d,%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%b", log.tick(), log.uuid(), log.x(), log.y(), log.z(), log.yaw(), log.pitch(), log.movementX(), log.movementY(), log.movementZ(), log.movementDirectionX(), log.movementDirectionY(), log.movementDirectionZ(), log.isOnGround()));
+    public void setWindowSize(int size) {
     }
 
-    public List<PlayerLog> getLogs(String uuid) {
-        throw new NotImplementedException();
+    public List<PlayerLog> getLogs(String playerName) {
+        return new ArrayList<>();
     }
 }
