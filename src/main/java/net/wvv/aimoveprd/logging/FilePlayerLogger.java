@@ -1,7 +1,6 @@
 package net.wvv.aimoveprd.logging;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.FileHandler;
@@ -66,6 +65,6 @@ public class FilePlayerLogger implements IPlayerLogger {
     }
 
     public List<PlayerLog> getLogs(String playerName) {
-        return new ArrayList<>();
+        return null;
     }
 }

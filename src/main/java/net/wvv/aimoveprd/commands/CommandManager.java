@@ -8,19 +8,16 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.text.Text;
 import net.wvv.aimoveprd.logging.FilePlayerLogger;
 import net.wvv.aimoveprd.logging.IPlayerLogger;
-import net.wvv.aimoveprd.player.CubicPlayerMovementRegressor;
-import net.wvv.aimoveprd.player.IClientPlayersManager;
-import net.wvv.aimoveprd.player.LinearPlayerMovementRegressor;
-import net.wvv.aimoveprd.player.PlayerPathAnimator;
+import net.wvv.aimoveprd.player.*;
 
 import java.lang.reflect.Field;
 
 public class CommandManager {
-    private final IClientPlayersManager clientPlayersManager;
-    private final IPlayerLogger logger;
+    private final ClientPlayersManager clientPlayersManager;
     private final PlayerPathAnimator playerPathAnimator;
+    private IPlayerLogger logger;
 
-    public CommandManager(IClientPlayersManager clientPlayersManager, IPlayerLogger logger, PlayerPathAnimator playerPathAnimator) {
+    public CommandManager(ClientPlayersManager clientPlayersManager, IPlayerLogger logger, PlayerPathAnimator playerPathAnimator) {
         this.clientPlayersManager = clientPlayersManager;
         this.logger = logger;
         this.playerPathAnimator = playerPathAnimator;
@@ -124,10 +121,13 @@ public class CommandManager {
                                                         break;
                                                     case LOGGER:
                                                         if (value.equals("file")) {
-                                                            clientPlayersManager.setLogger(new FilePlayerLogger());
+                                                            this.logger = new FilePlayerLogger();
+                                                            clientPlayersManager.setLogger(this.logger);
+                                                            playerPathAnimator.setLogger(this.logger);
                                                             context.getSource().sendFeedback(Text.literal("Set logger to: file"));
                                                         } else if (value.equals("memory")) {
-                                                            clientPlayersManager.setLogger(logger);
+                                                            clientPlayersManager.setLogger(this.logger);
+                                                            playerPathAnimator.setLogger(this.logger);
                                                             context.getSource().sendFeedback(Text.literal("Set logger to: memory"));
                                                         } else {
                                                             context.getSource().sendFeedback(Text.literal("Invalid logger type: " + value));

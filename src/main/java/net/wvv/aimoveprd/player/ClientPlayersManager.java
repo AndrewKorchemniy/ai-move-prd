@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class ClientPlayersManager implements IClientPlayersManager {
+public class ClientPlayersManager {
     private final HashSet<String> trackingPlayers = new HashSet<>();
     private final List<Entity> players = new ArrayList<>();
     private IPlayerLogger logger;
@@ -25,9 +25,14 @@ public class ClientPlayersManager implements IClientPlayersManager {
         tick++;
     }
 
-    public void setLogger(IPlayerLogger newLogger) {
-        logger.stop();
-        logger = newLogger;
+    private void updatePlayers(ClientWorld world) {
+        players.clear();
+
+        world.getEntities().forEach(entity -> {
+            if (entity.isPlayer() && entity.getName() != null && trackingPlayers.contains(entity.getName().getString())) {
+                players.add(entity);
+            }
+        });
     }
 
     private void log() {
@@ -47,6 +52,11 @@ public class ClientPlayersManager implements IClientPlayersManager {
         });
     }
 
+    public void setLogger(IPlayerLogger logger) {
+        this.logger.stop();
+        this.logger = logger;
+    }
+
     public void addTracking(String playerName) {
         trackingPlayers.add(playerName);
     }
@@ -61,15 +71,5 @@ public class ClientPlayersManager implements IClientPlayersManager {
 
     public List<Entity> getPlayers() {
         return players;
-    }
-
-    private void updatePlayers(ClientWorld world) {
-        players.clear();
-
-        world.getEntities().forEach(entity -> {
-            if (entity.isPlayer() && !entity.isInvisible() && entity.isAlive() && entity.getDisplayName() != null && trackingPlayers.contains(entity.getDisplayName().getString())) {
-                players.add(entity);
-            }
-        });
     }
 }

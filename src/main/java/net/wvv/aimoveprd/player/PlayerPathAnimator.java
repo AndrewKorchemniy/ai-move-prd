@@ -10,11 +10,11 @@ import net.wvv.aimoveprd.logging.PlayerLog;
 import java.util.List;
 
 public class PlayerPathAnimator {
-    private final IClientPlayersManager clientPlayersManager;
-    private final IPlayerLogger logger;
+    private final ClientPlayersManager clientPlayersManager;
+    private IPlayerLogger logger;
     private IPlayerMovementRegressor playerMovementPredictor;
 
-    public PlayerPathAnimator(IClientPlayersManager clientPlayersManager, IPlayerMovementRegressor playerMovementPredictor, IPlayerLogger logger) {
+    public PlayerPathAnimator(ClientPlayersManager clientPlayersManager, IPlayerMovementRegressor playerMovementPredictor, IPlayerLogger logger) {
         this.clientPlayersManager = clientPlayersManager;
         this.playerMovementPredictor = playerMovementPredictor;
         this.logger = logger;
@@ -24,10 +24,12 @@ public class PlayerPathAnimator {
         List<Entity> players = clientPlayersManager.getPlayers();
 
         for (Entity player : players) {
-            if (player.isOnGround()) {
+            var playerLogs = logger.getLogs(player.getUuid().toString());
+
+            if (playerLogs == null || playerLogs.size() < 2) {
                 return;
             }
-            var playerLogs = logger.getLogs(player.getUuid().toString());
+
             var actualPath = playerLogs.stream().map(PlayerLog::getXYZ).toList();
             var predictedPath = playerMovementPredictor.predict(actualPath, 20);
             animatePath(predictedPath, world);
@@ -36,6 +38,11 @@ public class PlayerPathAnimator {
 
     public void setPredictor(IPlayerMovementRegressor playerMovementPredictor) {
         this.playerMovementPredictor = playerMovementPredictor;
+    }
+
+    public void setLogger(IPlayerLogger logger) {
+        this.logger.stop();
+        this.logger = logger;
     }
 
     private void animatePath(List<Vec3d> path, ClientWorld world) {
