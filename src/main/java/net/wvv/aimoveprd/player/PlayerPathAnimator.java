@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.util.math.Vec3d;
 import net.wvv.aimoveprd.logging.IPlayerLogger;
-import net.wvv.aimoveprd.logging.PlayerLog;
 
 import java.util.List;
 
@@ -13,6 +12,7 @@ public class PlayerPathAnimator {
     private final ClientPlayersManager clientPlayersManager;
     private IPlayerLogger logger;
     private IPlayerMovementRegressor playerMovementPredictor;
+    private int pathLength = 20;
 
     public PlayerPathAnimator(ClientPlayersManager clientPlayersManager, IPlayerMovementRegressor playerMovementPredictor, IPlayerLogger logger) {
         this.clientPlayersManager = clientPlayersManager;
@@ -30,8 +30,7 @@ public class PlayerPathAnimator {
                 return;
             }
 
-            var actualPath = playerLogs.stream().map(PlayerLog::getXYZ).toList();
-            var predictedPath = playerMovementPredictor.predict(actualPath, 20);
+            var predictedPath = playerMovementPredictor.predict(playerLogs, pathLength);
             animatePath(predictedPath, world);
         }
     }
@@ -43,6 +42,10 @@ public class PlayerPathAnimator {
     public void setLogger(IPlayerLogger logger) {
         this.logger.stop();
         this.logger = logger;
+    }
+
+    public void setPathLength(int pathLength) {
+        this.pathLength = pathLength;
     }
 
     private void animatePath(List<Vec3d> path, ClientWorld world) {

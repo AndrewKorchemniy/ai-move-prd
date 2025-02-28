@@ -4,4 +4,5 @@ public enum ConfigType {
     LOGGER,
     PREDICTOR,
     WINDOW_SIZE,
+    PATH_LENGTH
 }

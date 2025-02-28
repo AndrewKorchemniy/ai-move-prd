@@ -1,9 +1,11 @@
 package net.wvv.aimoveprd.player;
 
 import net.minecraft.util.math.Vec3d;
+import net.wvv.aimoveprd.logging.PlayerLog;
 
 import java.util.List;
 
 public interface IPlayerMovementRegressor {
-    List<Vec3d> predict(List<Vec3d> actual, int ticks);
+    void setWindowSize(int size);
+    List<Vec3d> predict(List<PlayerLog> actual, int ticks);
 }

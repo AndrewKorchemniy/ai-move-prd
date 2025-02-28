@@ -1,24 +1,37 @@
 package net.wvv.aimoveprd.player;
 
 import net.minecraft.util.math.Vec3d;
+import net.wvv.aimoveprd.logging.PlayerLog;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CubicPlayerMovementRegressor implements IPlayerMovementRegressor {
+    private int windowSize = 20;
 
-    public List<Vec3d> predict(List<Vec3d> actual, int ticks) {
+    public void setWindowSize(int size) {
+        windowSize = size;
+    }
+
+    @Override
+    public List<Vec3d> predict(List<PlayerLog> actual, int ticks) {
+        var actualPath = actual.stream().map(PlayerLog::getXYZ).toList();
+        if (actualPath.size() < windowSize) {
+            return new ArrayList<>();
+        }
+        actualPath = actualPath.subList(actualPath.size() - windowSize, actualPath.size());
+
         // split apart the actual list into x, y, and z components
         // then use the best fit line algorithm to predict the next position
         // return the predicted position as a Vec3d list
-        var x_train = new double[actual.size()];
-        var y_train = new double[actual.size()];
-        var z_train = new double[actual.size()];
+        var x_train = new double[actualPath.size()];
+        var y_train = new double[actualPath.size()];
+        var z_train = new double[actualPath.size()];
 
-        for (int i = 0; i < actual.size(); i++) {
-            x_train[i] = actual.get(i).x;
-            y_train[i] = actual.get(i).y;
-            z_train[i] = actual.get(i).z;
+        for (int i = 0; i < actualPath.size(); i++) {
+            x_train[i] = actualPath.get(i).x;
+            y_train[i] = actualPath.get(i).y;
+            z_train[i] = actualPath.get(i).z;
         }
 
         var x_predict = leastSquares(x_train, ticks);

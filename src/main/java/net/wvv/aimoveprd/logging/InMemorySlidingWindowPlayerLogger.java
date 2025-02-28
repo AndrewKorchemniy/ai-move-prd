@@ -4,11 +4,9 @@ import java.util.*;
 
 public class InMemorySlidingWindowPlayerLogger implements IPlayerLogger {
     private final Map<String, List<PlayerLog>> logs;
-    private int size;
     private boolean isLogging = false;
 
-    public InMemorySlidingWindowPlayerLogger(int size) {
-        this.size = size;
+    public InMemorySlidingWindowPlayerLogger() {
         this.logs = new HashMap<>();
     }
 
@@ -18,7 +16,7 @@ public class InMemorySlidingWindowPlayerLogger implements IPlayerLogger {
         }
 
         var playerLogs = logs.computeIfAbsent(log.uuid(), k -> new ArrayList<>());
-        if (playerLogs.size() >= size) {
+        if (playerLogs.size() >= 20) {
             playerLogs.removeFirst();
         }
 
@@ -41,11 +39,6 @@ public class InMemorySlidingWindowPlayerLogger implements IPlayerLogger {
 
         logs.clear();
         isLogging = false;
-    }
-
-    public void setWindowSize(int size) {
-        logs.clear();
-        this.size = size;
     }
 
     public List<PlayerLog> getLogs(String playerName) {

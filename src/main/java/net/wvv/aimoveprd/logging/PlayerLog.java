@@ -8,4 +8,8 @@ public record PlayerLog(long tick, String uuid, double x, double y, double z, fl
     public Vec3d getXYZ() {
         return new Vec3d(x, y, z);
     }
+
+    public Vec3d getMovementXYZ() {
+        return new Vec3d(movementX, movementY, movementZ);
+    }
 }

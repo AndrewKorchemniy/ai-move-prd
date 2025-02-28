@@ -15,12 +15,14 @@ import java.lang.reflect.Field;
 public class CommandManager {
     private final ClientPlayersManager clientPlayersManager;
     private final PlayerPathAnimator playerPathAnimator;
+    private IPlayerMovementRegressor regressor;
     private IPlayerLogger logger;
 
-    public CommandManager(ClientPlayersManager clientPlayersManager, IPlayerLogger logger, PlayerPathAnimator playerPathAnimator) {
+    public CommandManager(ClientPlayersManager clientPlayersManager, IPlayerLogger logger, PlayerPathAnimator playerPathAnimator, IPlayerMovementRegressor regressor) {
         this.clientPlayersManager = clientPlayersManager;
         this.logger = logger;
         this.playerPathAnimator = playerPathAnimator;
+        this.regressor = regressor;
     }
 
     public void registerCommands() {
@@ -98,14 +100,24 @@ public class CommandManager {
 
                                                 switch (config.type) {
                                                     case PREDICTOR:
-                                                        if (value.equals("linear")) {
-                                                            playerPathAnimator.setPredictor(new LinearPlayerMovementRegressor());
-                                                            context.getSource().sendFeedback(Text.literal("Set movement predictor to: linear"));
-                                                        } else if (value.equals("cubic")) {
-                                                            playerPathAnimator.setPredictor(new CubicPlayerMovementRegressor());
-                                                            context.getSource().sendFeedback(Text.literal("Set movement predictor to: cubic"));
-                                                        } else {
-                                                            context.getSource().sendFeedback(Text.literal("Invalid predictor type: " + value));
+                                                        switch (value) {
+                                                            case "linear" -> {
+                                                                regressor = new LinearPlayerMovementRegressor();
+                                                                playerPathAnimator.setPredictor(regressor);
+                                                                context.getSource().sendFeedback(Text.literal("Set movement predictor to: linear"));
+                                                            }
+                                                            case "cubic" -> {
+                                                                regressor = new CubicPlayerMovementRegressor();
+                                                                playerPathAnimator.setPredictor(regressor);
+                                                                context.getSource().sendFeedback(Text.literal("Set movement predictor to: cubic"));
+                                                            }
+                                                            case "perceptron" -> {
+                                                                regressor = new PerceptronPlayerMovementRegressor();
+                                                                playerPathAnimator.setPredictor(regressor);
+                                                                context.getSource().sendFeedback(Text.literal("Set movement predictor to: perceptron"));
+                                                            }
+                                                            default ->
+                                                                    context.getSource().sendFeedback(Text.literal("Invalid predictor type: " + value));
                                                         }
                                                         break;
                                                     case WINDOW_SIZE:
@@ -116,7 +128,7 @@ public class CommandManager {
                                                             break;
                                                         }
 
-                                                        logger.setWindowSize(windowSize);
+                                                        regressor.setWindowSize(windowSize);
                                                         context.getSource().sendFeedback(Text.literal("Set window size to: " + windowSize));
                                                         break;
                                                     case LOGGER:
@@ -132,6 +144,17 @@ public class CommandManager {
                                                         } else {
                                                             context.getSource().sendFeedback(Text.literal("Invalid logger type: " + value));
                                                         }
+                                                        break;
+                                                    case PATH_LENGTH:
+                                                        int pathLength = Integer.parseInt(value);
+
+                                                        if (pathLength < 2) {
+                                                            context.getSource().sendFeedback(Text.literal("Path length must be greater than 1"));
+                                                            break;
+                                                        }
+
+                                                        playerPathAnimator.setPathLength(pathLength);
+                                                        context.getSource().sendFeedback(Text.literal("Set path length to: " + pathLength));
                                                         break;
                                                     default:
                                                         break;

@@ -9,11 +9,11 @@ import net.wvv.aimoveprd.player.CubicPlayerMovementRegressor;
 import net.wvv.aimoveprd.player.PlayerPathAnimator;
 
 public class AimoveprdClient implements ClientModInitializer {
-    private final InMemorySlidingWindowPlayerLogger defaultLogger = new InMemorySlidingWindowPlayerLogger(5);
+    private final InMemorySlidingWindowPlayerLogger defaultLogger = new InMemorySlidingWindowPlayerLogger();
     private final ClientPlayersManager clientPlayersManager = new ClientPlayersManager(defaultLogger);
     private final CubicPlayerMovementRegressor defaultMovementPredictor = new CubicPlayerMovementRegressor();
     private final PlayerPathAnimator playerPathAnimator = new PlayerPathAnimator(clientPlayersManager, defaultMovementPredictor, defaultLogger);
-    private final CommandManager commandManager = new CommandManager(clientPlayersManager, defaultLogger, playerPathAnimator);
+    private final CommandManager commandManager = new CommandManager(clientPlayersManager, defaultLogger, playerPathAnimator, defaultMovementPredictor);
 
     @Override
     public void onInitializeClient() {
